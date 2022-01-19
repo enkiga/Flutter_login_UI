@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_login/components/rounded_button.dart';
-import 'package:flutter_login/components/rounded_input.dart';
-import 'package:flutter_login/components/rounded_password_input.dart';
+import 'package:flutter_login/components/cancel_button.dart';
+import 'package:flutter_login/components/login_form.dart';
+import 'package:flutter_login/components/register_form.dart';
 import 'package:flutter_login/constants.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -51,61 +50,51 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       body: Stack(
         children: [
-          //Cancel Button
-          AnimatedOpacity(
-            opacity: isLogin ? 0.0 : 1.0,
-            duration: animationDuration,
-            child: Align(
-              alignment: Alignment.topCenter,
+          //Decoration
+          Positioned(
+              top: 100,
+              right: -50,
               child: Container(
-                width: size.width,
-                height: size.height * 0.1,
-                alignment: Alignment.bottomCenter,
-                child: IconButton(
-                  icon: const Icon(Icons.close),
-                  //returning null to disable button
-                  onPressed: isLogin ? null: () { 
-                    animationController.reverse();
-                    setState(() {
-                      isLogin = !isLogin;
-                    });
-                  },
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
                   color: kPrimaryColor,
                 ),
-              ),
-            ),
-          ),
-          //Login Form
-          AnimatedOpacity(
-            opacity: isLogin ? 1.0 : 0.0,
-            duration: animationDuration * 4,
-            child: Align(
-              alignment: Alignment.center,
-              child: SingleChildScrollView(
-                  child: SizedBox(
-                width: size.width,
-                height: defaultLoginSize,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Welcome Back',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                      const SizedBox(height: 30),
-                      SvgPicture.asset("assets/images/login.svg",
-                          width: 200, height: 200),
-                      const SizedBox(height: 30),
-                      const RoundedInput(icon: Icons.mail, hint: 'Username'),
-                      const RoundedPasswordInput(hint: 'Password'),
-                      const SizedBox(height: 10),
-                      const RoundedButton(title: 'LOGIN')
-                    ]),
               )),
-            ),
+
+          Positioned(
+              top: -50,
+              left: -50,
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: kPrimaryColor,
+                ),
+              )),
+          //Cancel Button
+          CancelButton(
+            isLogin: isLogin,
+            animationDuration: animationDuration,
+            size: size,
+            animationController: animationController,
+            //isLogin ? null:
+            tapEvent: () {
+              animationController.reverse();
+              setState(() {
+                isLogin = !isLogin;
+              });
+            },
           ),
+
+          //Login Form
+          LoginForm(
+              isLogin: isLogin,
+              animationDuration: animationDuration,
+              size: size,
+              defaultLoginSize: defaultLoginSize),
 
           //Register Container
           AnimatedBuilder(
@@ -123,41 +112,11 @@ class _LoginScreenState extends State<LoginScreen>
           ),
 
           //Register Form
-          AnimatedOpacity(
-            opacity: isLogin ? 0.0 : 1.0,
-            duration: animationDuration * 5,
-            child: Visibility(
-              visible: !isLogin,
-              child: Align(
-                alignment: Alignment.center,
-                child: SingleChildScrollView(
-                    child: SizedBox(
-                  width: size.width,
-                  height: defaultLoginSize,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Welcome',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 24),
-                        ),
-                        const SizedBox(height: 30),
-                        SvgPicture.asset("assets/images/login.svg",
-                            width: 1500, height: 150),
-                        const SizedBox(height: 30),
-                        const RoundedInput(icon: Icons.mail, hint: 'Username'),
-                        const RoundedInput(
-                            icon: Icons.face_rounded, hint: 'Name'),
-                        const RoundedPasswordInput(hint: 'Password'),
-                        const SizedBox(height: 10),
-                        const RoundedButton(title: 'SIGNUP')
-                      ]),
-                )),
-              ),
-            ),
-          ),
+          RegisterForm(
+              isLogin: isLogin,
+              animationDuration: animationDuration,
+              size: size,
+              defaultLoginSize: defaultLoginSize),
         ],
       ),
     );
@@ -175,13 +134,15 @@ class _LoginScreenState extends State<LoginScreen>
             color: kBackgroundColor),
         alignment: Alignment.center,
         child: GestureDetector(
-          onTap: !isLogin ? null:  () {
-            animationController.forward();
+          onTap: !isLogin
+              ? null
+              : () {
+                  animationController.forward();
 
-            setState(() {
-              isLogin = !isLogin;
-            });
-          },
+                  setState(() {
+                    isLogin = !isLogin;
+                  });
+                },
           child: isLogin
               ? const Text(
                   "Don't have an account? Sign up",
